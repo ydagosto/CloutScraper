@@ -3,6 +3,11 @@ import os
 import urllib.request
 from bs4 import BeautifulSoup
 from bs4 import SoupStrainer
+import pandas as pd
+import datetime
+
+now = datetime.datetime.now()
+
 
 
 #set working directory
@@ -42,12 +47,21 @@ for article in soup:
         artist_url_list.append(str(article.get('href', '/')))
         artist_name_list.append(str(article.text))
         i = i - 1
+
+df = {"artist_url":artist_url_list, 
+      "artist_name" : artist_name_list,
+      "song_url" : song_url_list,
+      "song_name" : song_name_list}
+
+data = pd.DataFrame(df, columns = ['artist_url',
+                                   'artist_name',
+                                   'song_url',
+                                   'song_name'])
+
+data['country'] = 'US'
+data['genre'] = 'Hip Hop'
+data['run_date'] = now
+
+pd.set_option('display.max_columns', None)
     
-
-print(artist_url_list)
-
-print(artist_name_list)
-
-print(song_url_list)
-
-print(song_name_list)
+data.to_csv("hot_new.csv")
