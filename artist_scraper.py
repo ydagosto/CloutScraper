@@ -4,6 +4,8 @@ from bs4 import SoupStrainer
 from selenium import webdriver
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.common.exceptions import TimeoutException
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
 
 # Trying to scrape Ronny J's soundcloud links
 # End goal: Get all tracks and info about tracks by just giving the link to his soundcloud.
@@ -16,6 +18,7 @@ content = urllib.request.urlopen(ronnyj_tracks_url).read()
 # experimenting with selenium
 driver = webdriver.Chrome(executable_path='D:\\SlapScience\\chromedriver_win32\\chromedriver.exe')
 driver.get(ronnyj_tracks_url)
+WebDriverWait(driver, 2).until(EC.visibility_of_element_located((By.CSS_SELECTOR, "ul.lazyLoadingList__list")))
 
 # scrolling to the bottom of the page
 lazy_soundList_loaded = 0
@@ -35,4 +38,10 @@ while lazy_soundList_loaded == 0:  # waits for the "paging-eof" class to appear 
     loaded_songs = len(driver.find_elements_by_class_name('soundList__item'))
     lazy_soundList_loaded = len(driver.find_elements_by_class_name('paging-eof'))
     print(lazy_soundList_loaded)
+
+# now we can scrape the html's for each of the songs and make a list
+# this will take 3 extra songs (the songs in the artists like list on the right sidebar
+# might always be the last 3 songs, so we could just truncate those off
+links = [soundTitle.get_attribute("href") for soundTitle in driver.find_elements_by_class_name('soundTitle__title')]
+print(links)
 driver.quit()
