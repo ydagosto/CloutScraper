@@ -12,6 +12,8 @@ now = datetime.datetime.now()
 #set working directory
 os.chdir("c:\\Users\Yuri D'Agosto\Desktop\SlapScience")
 
+url = "https://soundcloud.com/charts/"
+
 api_types = ["top", "new"]
 
 countries = ['AU', 'CA', 'FR', 
@@ -100,7 +102,7 @@ appended_data = pd.DataFrame([], columns = ['artist_url',
                              'playlist'])
 
 for api_type, genre, country in api_genre_country_combos:
-    api_url = api1 + api_type +"genre=" + genre +"&country=" + country
+    api_url = url + api_type +"?genre=" + genre +"&country=" + country
     data = eager_playlist_scraper(api_url, api_type, genre ,country)
     
     appended_data = pd.concat([appended_data, data])
@@ -108,4 +110,4 @@ for api_type, genre, country in api_genre_country_combos:
 print(appended_data)
 
 
-appended_data.to_csv("hot_new.csv")
+appended_data.to_csv("sc_hot_and_top.csv")
