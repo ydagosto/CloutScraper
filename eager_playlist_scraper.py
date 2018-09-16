@@ -95,7 +95,7 @@ appended_data = pd.DataFrame([], columns = ['artist_url',
                              'song_name',
                              'country',
                              'genre',
-                             'playlist_type'
+                             'playlist_type',
                              'run_date',
                              'playlist'])
 
