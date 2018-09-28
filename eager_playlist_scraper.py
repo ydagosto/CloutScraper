@@ -1,3 +1,12 @@
+
+"""
+Script to scrape artists urls from all charts page on SoundCloud.
+Cycle through all combinations of country and genre, for top50 and new.
+The data pulled is going to be a catalogue of artists we are going to find
+urls for and pull streaming data for. 
+This will include data for artist, track url and name. Keeping only distincts
+"""
+
 #import packages
 import os
 import urllib.request
@@ -12,8 +21,13 @@ now = datetime.datetime.now()
 #set working directory
 os.chdir("c:\\Users\Yuri D'Agosto\Desktop\SlapScience")
 
+#==========================================================================
+#Set run parameters
+
+catalogue_name = "sc_hot_and_top.csv"
 url = "https://soundcloud.com/charts/"
 
+#charts will be new and top and for each available country and genre
 api_types = ["top", "new"]
 
 countries = ['AU', 'CA', 'FR', 
@@ -26,12 +40,23 @@ genres = ['alternativerock', 'ambient', 'classical',
               'deephouse', 'disco', 'drumbass',
               'dubstep', 'electronic','folksingersongwriter',
               'all-music', 'all-audio']
-
+			  
+#generate all combinations of api type, genre, and country
 api_genre_country_combos = list(product(api_types, genres, countries))
 
+#==========================================================================
+#read in current catalogue and find max RunID
+#generate new runID
 
+current_catalogue = pd.read_csv(catalogue_name, index_col = 0)
+
+max_runID = current_catalogue['runID'].max()
+
+next_runID = max_runID + 1
+
+#==========================================================================
 #function to take api url and take all songs with publisher and urls
-def eager_playlist_scraper(api_url, api_type, genre ,country):
+def eager_playlist_scraper(api_url, api_type, genre ,country, run_number):
     
     #url of soundcloud page to scrape + read from page using urllib
     content = urllib.request.urlopen(api_url).read()
@@ -74,7 +99,8 @@ def eager_playlist_scraper(api_url, api_type, genre ,country):
           "genre" : genre,
           "playlist_type" : api_type,
           "run_date" : now,
-          "playlist": api_url}
+          "playlist": api_url,
+          "runID": run_number}
     
     data = pd.DataFrame(df, columns = ['artist_url',
                                        'artist_name',
@@ -84,13 +110,18 @@ def eager_playlist_scraper(api_url, api_type, genre ,country):
                                        'genre',
                                        "playlist_type",
                                        'run_date',
-                                       'playlist'])
+                                       'playlist',
+                                       'runID'])
     
     
     pd.set_option('display.max_columns', None)
     
     return data
 
+#==========================================================================
+#implement function, loop it over all possible combnations for catalogue
+
+#generare empty data set, this will be the catalugue
 appended_data = pd.DataFrame([], columns = ['artist_url', 
                              'artist_name',
                              'song_url',
@@ -99,15 +130,28 @@ appended_data = pd.DataFrame([], columns = ['artist_url',
                              'genre',
                              'playlist_type',
                              'run_date',
-                             'playlist'])
+                             'playlist',
+                             'runID'])
 
+#Loop through all combinations and append the data
 for api_type, genre, country in api_genre_country_combos:
     api_url = url + api_type +"?genre=" + genre +"&country=" + country
-    data = eager_playlist_scraper(api_url, api_type, genre ,country)
+    data = eager_playlist_scraper(api_url, api_type, genre ,country, next_runID)
+    data.index = data.index + 1
     
-    appended_data = pd.concat([appended_data, data])
+    appended_data = pd.concat([appended_data, data])\
+                      .rename_axis("chart_num")
+
+#reset index and rename indez
+appended_data = appended_data\
+                .reset_index()\
+                .rename_axis('index')
     
-print(appended_data)
+#append to larger table
+current_catalogue = pd.concat([current_catalogue, appended_data])\
+                      .reset_index(drop = True)\
+                      .rename_axis('index')
 
 
-appended_data.to_csv("sc_hot_and_top.csv")
+#save the data sets
+current_catalogue.to_csv("sc_hot_and_top.csv")
