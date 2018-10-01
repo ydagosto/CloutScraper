@@ -70,7 +70,7 @@ def eager_playlist_scraper(api_url, api_type, genre ,country, run_number):
     #cycle variable for loop
     i = 0 #track if song (=0) or artist (=1)
     
-    ## parse out article sections and pattern with second headers (h2) and 'a' child
+    # parse out article sections and pattern with second headers (h2) and 'a' child
     only_tags_with_h2 = SoupStrainer("article")
     
     soup = BeautifulSoup(content,

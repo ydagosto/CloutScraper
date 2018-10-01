@@ -1,0 +1,27 @@
+
+class Sc_scraper:
+
+	#Class object catalogue is a pandas dataframe -> self.catalogue.
+	#run the constructor with nothing specified and it will generate
+	#an empty catalogue dataframes with standard columns.
+	def __init__(self, url_string , url_type = None, genre = None, country = None):
+		
+		if url_string == "charts":
+			url = "https://soundcloud.com/charts/"
+			self.url = url + url_type + "?genre=" + genre + "&country=" + country
+		else:
+			self.url = str(url_string)
+			
+	
+	def print_url(self):
+		
+		print(self.url)
+		
+		return
+	
+	def deconstruct_charts_url(self):
+	
+		re.split
+		
+	
+	
