@@ -4,9 +4,9 @@ These are just pandas dataframes in standard format.
 """
 class Catalogue:
 
-	#Class object catalogue is a pandas dataframe -> self.catalogue.
-	#run the constructor with nothing specified and it will generate
-	#an empty catalogue dataframes with standard columns.
+	# Class object catalogue is a pandas dataframe -> self.catalogue.
+	# run the constructor with nothing specified and it will generate
+	# an empty catalogue dataframes with standard columns.
 	def __init__(self, artist_catalogue = None):
 		if artist_catalogue is None:
 			self.catalogue = pd.DataFrame([], columns = [
@@ -24,16 +24,16 @@ class Catalogue:
 			self.catalogue = artist_catalogue
 		
 	
-	#To print the dataframe
-	def print_catalogue(self):
+	# To print the dataframe
+	def print_info_catalogue(self):
 		
 		pd.set_option('display.max_columns', None)
 		
-		print(self.catalogue)
+		print(self.catalogue.info())
 		
 		return
 	
-	#takes in catalogue, retuns tuple of max run_id and next run_id	
+	# Takes in catalogue, retuns tuple of max run_id and next run_id	
 	def run_id_gen(self):
 	
 		max_run_id = self.catalogue['runID'].max()
@@ -41,35 +41,87 @@ class Catalogue:
 
 		return max_run_id, next_run_id
 	
-	#concatenates to Catalogue objects vertically (Sql union)
+	# Concatenates to Catalogue objects vertically (Sql union)
 	def union_catalogue(self, other):
-	
-		catalogue = Catalogue(pd.concat([self.catalogue, other.catalogue]))
+		
+		self.catalogue = pd.concat([self.catalogue, other.catalogue])
 
-		return catalogue
+		return self
 	
-	#To rename index the catalogue based on given string variable
+	# To rename index the catalogue based on given string variable
 	def rename_index(self, string):
 		
-		re_named_data = Catalogue(self.catalogue\
-				.rename_axis(string))
+		self.catalogue = self.catalogue.rename_axis(string)
 				
-		return re_named_data
+		return self
 	
-	#To add index or replace index of catalogue. Drop index replaces index
+	# To add index or replace index of catalogue. Drop index replaces index
 	def re_index_catalogue(self, drop = None):
 		if drop is None:
-			re_indexed_data = Catalogue(self.catalogue\
-					.reset_index()\
-					.rename_axis('index'))
+			self.catalogue = self.catalogue\
+					.reset_index(drop = False)\
+					.rename_axis('index')
 		else:
-			re_indexed_data = Catalogue(self.catalogue\
+			self.catalogue = self.catalogue\
 					.reset_index(drop = True)\
-					.rename_axis('index'))
+					.rename_axis('index')
 				
-		return re_indexed_data
+		return self
+		
+	# To get disinct songs and artists with update stats
+	def clean_up_catalogue(self):
+		
+		# This yields a warning: using dictionaries was removed because of 
+		# its complexity and somewhat ambiguous nature. 
+		# There is an ongoing discussion on how to improve this functionality
+		aggregation = {
+        "chart_num" : {"max_chart_num" : "max"},
+        "run_date" : {"first_seen" : "min", 
+		"last_seen": "max"},
+        "runID" : {"last_runID" : "max",
+		"first_runID" : "min"}
+        }
+		
+		repository = self.catalogue
+		
+		# Distinct artist repository
+		artists = repository\
+		.groupby(
+		['artist_url', 'artist_name']
+		)\
+		.agg(aggregation)\
+		.reset_index()
+		
+		artists.columns = ['artist_url', 'artist_name',
+		'max_chart_num', 'last_seen',
+		'first_seen', 'last_runID',
+		'first_runID']
+		
+		artists = Catalogue(artists)
+		
+		# Distinct songs repository
+		songs = repository\
+		.groupby(
+		['song_url', 'song_name', 
+		'artist_url', 'artist_name' , 
+		'country', 'genre', 
+		'playlist_type']
+		)\
+		.agg(aggregation)\
+		.reset_index()
+		
+		songs.columns = ['song_url', 'song_name', 
+		'artist_url', 'artist_name' , 
+		'country', 'genre', 
+		'playlist_type', 'max_chart_num', 
+		'last_seen','first_seen', 
+		'last_runID','first_runID']
+		
+		songs = Catalogue(songs)
+		
+		return artists, songs
 	
-	#To save data to CSV based on working directory
+	# To save data to CSV based on working directory
 	def save_data(self, file_name):
 	
 		file_to_save = self.catalogue

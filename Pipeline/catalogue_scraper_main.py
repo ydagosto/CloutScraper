@@ -9,8 +9,7 @@ This will include data for artist, track url and name. Keeping only distincts
 parameters = open("parameters.py", 'r').read()
 exec(parameters)
 
-#==============================================================================
-
+# =============================================================================
 current_catalogue = Catalogue(pd.read_csv(catalogue_name, index_col = 0))
 
 max_run_id, next_run_id = Catalogue.run_id_gen(current_catalogue)
@@ -24,12 +23,36 @@ for chart_type, genre, country in api_genre_country_combos:
     
     appended_data = Catalogue.union_catalogue(appended_data, data)
 
-
-# reset index and rename indez
+# Reset and rename index
 appended_data = Catalogue.rename_index(appended_data, 'chart_num')
 appended_data = Catalogue.re_index_catalogue(appended_data)
 
+# =============================================================================
+# Union to catalogue, clean up, and save
 new_data = Catalogue.union_catalogue(current_catalogue, appended_data)
 new_data = Catalogue.re_index_catalogue(new_data, 'drop index')
 
 Catalogue.save_data(new_data, catalogue_name)
+
+clean_up_artists, clean_up_songs = Catalogue.clean_up_catalogue(
+        Catalogue(pd.read_csv(catalogue_name, index_col = 0))
+        )
+        
+Catalogue.save_data(clean_up_artists, artist_repository)
+Catalogue.save_data(clean_up_songs, song_repository)
+# =============================================================================
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
