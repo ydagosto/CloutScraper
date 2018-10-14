@@ -43,7 +43,7 @@ Catalogue.save_data(clean_up_songs, song_repository)
 
 # =============================================================================
 # Log Run
-log = open(r".\run_log.log", 'a')
+log = open(r"./run_log.log", 'a')
 
 # Write date/time
 log.write('execution successful at ' + str(datetime.datetime.now()))
