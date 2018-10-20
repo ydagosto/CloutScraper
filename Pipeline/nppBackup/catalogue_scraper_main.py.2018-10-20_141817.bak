@@ -16,7 +16,6 @@ max_run_id, next_run_id = Catalogue.run_id_gen(current_catalogue)
 
 appended_data = Catalogue()
 
-# Attempt to run the scraper
 try:
     # Loop through all combinations and append the data
     for chart_type, genre, country in api_genre_country_combos:
@@ -29,7 +28,7 @@ try:
     appended_data = Catalogue.rename_index(appended_data, 'chart_num')
     appended_data = Catalogue.re_index_catalogue(appended_data)
     
-    # ==========================================================================
+    # =============================================================================
     # Union to catalogue, clean up, and save
     new_data = Catalogue.union_catalogue(current_catalogue, appended_data)
     new_data = Catalogue.re_index_catalogue(new_data, 'drop index')
@@ -43,7 +42,7 @@ try:
     Catalogue.save_data(clean_up_artists, artist_repository)
     Catalogue.save_data(clean_up_songs, song_repository)
 
-	# ==========================================================================
+# =============================================================================
     # Log Run
     log = open(r"./run_log.log", 'a')
     
@@ -52,8 +51,7 @@ try:
     log.write('\n')
     log.close()
 
-
-# If fails then log that the run failed
+#If failes then log that the run failed
 except:
     # Log Run
     log = open(r"./run_log.log", 'a')
@@ -62,6 +60,7 @@ except:
     log.write('execution failed at ' + str(datetime.datetime.now()))
     log.write('\n')
     log.close()
+# =============================================================================
 
 
 
