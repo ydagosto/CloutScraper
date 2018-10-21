@@ -16,7 +16,7 @@ max_run_id, next_run_id = Catalogue.run_id_gen(current_catalogue)
 
 appended_data = Catalogue()
 
-# Attempt to run the scraper
+# Error handling: Attempt to run the scraper
 try:
     # Loop through all combinations and append the data
     for chart_type, genre, country in api_genre_country_combos:
