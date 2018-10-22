@@ -83,6 +83,8 @@ artist_song.legend.location = "bottom_left"
 # Put both charts in a GridPlot
 qc = gridplot([[genre_country,artist_song]])
 
+
+
 #display QC
 show(qc)
 
