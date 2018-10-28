@@ -8,6 +8,13 @@ import datetime
 from itertools import product
 import re
 
+from selenium import webdriver
+from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.chrome.options import Options
+from selenium.common.exceptions import TimeoutException
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
+
 # Class with webscraping driver based on api url
 scraper_class = open("scraper_class.py", 'r').read()
 exec(scraper_class)
@@ -23,6 +30,7 @@ os.chdir("../Data")
 catalogue_name = "sc_hot_and_top.csv"
 artist_repository = "artist_repository.csv"
 song_repository = "song_repository.csv"
+song_metrics_data = "song_metrics.csv"
 
 # ==============================================================================
 # === CHARTS URLS
