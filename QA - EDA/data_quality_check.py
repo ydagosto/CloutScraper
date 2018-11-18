@@ -5,7 +5,7 @@ import pandas as pd
 from bokeh.plotting import *
 
 # Select working Directory
-os.chdir("../Data")
+os.chdir("../../Data")
 
 # Read in Dataset to do QC on 
 catalogue_name = "sc_hot_and_top.csv"

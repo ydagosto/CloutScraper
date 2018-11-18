@@ -13,7 +13,7 @@ external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
 #=================================================
 # Select working Directory - get data
-os.chdir("../Data")
+os.chdir("../../Data")
 
 # Read in Dataset to do QC on 
 catalogue_name = "sc_hot_and_top.csv"
