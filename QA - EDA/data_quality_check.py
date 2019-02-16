@@ -2,13 +2,16 @@
 # import packages
 import os
 import pandas as pd
+import pathlib
 from bokeh.plotting import *
 
 # Select working Directory
-os.chdir("../../Data")
+# =============================================================================
+# os.chdir("../../Data")
+# =============================================================================
 
-# Read in Dataset to do QC on 
-catalogue_name = "sc_hot_and_top.csv"
+# Read in Dataset to do QC on
+catalogue_name = "../../Data/sc_hot_and_top.csv"
 
 current_catalogue = pd.read_csv(catalogue_name, index_col = 0)
 

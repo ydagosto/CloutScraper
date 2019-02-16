@@ -1,0 +1,168 @@
+
+parameters = open("parameters.py", 'r').read()
+exec(parameters)
+
+# Trying to scrape Ronny J's soundcloud links
+# End goal: Get all tracks and info about tracks by just giving the link to his soundcloud.
+
+chrome_options = Options()  
+chrome_options.add_argument("--headless")
+
+driver = webdriver.Chrome(executable_path='../CloutScraper/chromedriver_win32/chromedriver.exe', chrome_options = chrome_options)
+
+artists_urls = list(pd.read_csv(artist_repository, index_col = 0)['artist_url'])
+
+
+def scrape_artist_page(artist_extension):
+    
+    url = 'https://soundcloud.com' + artist_extension + '/tracks'
+    
+    #Start Driver
+    driver.get(url)
+    
+    try:
+        WebDriverWait(driver, 2).until(EC.visibility_of_element_located((By.CSS_SELECTOR, "ul.lazyLoadingList__list")))
+    
+        # scrolling to the bottom of the page
+        lazy_soundList_loaded = 0
+        loaded_songs = len(driver.find_elements_by_class_name('soundList__item'))
+        except_count = 0
+     
+        while lazy_soundList_loaded == 0:  # waits for the "paging-eof" class to appear when list is loaded
+            driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+            try:
+                WebDriverWait(driver, 2).until((lambda x: len(driver.find_elements_by_class_name('soundList__item'))!= loaded_songs))
+                
+         # couldn't figure out how to get it to break when it finds the eof element, just catching timeout instead
+            except TimeoutException:
+                except_count += 1
+                if except_count == 2:
+                    break
+            loaded_songs = len(driver.find_elements_by_class_name('soundList__item'))
+            lazy_soundList_loaded = len(driver.find_elements_by_class_name('paging-eof'))
+            
+        #Grab elements in the page
+        item_path = "//*[@class='userMain__content']//li[@class='soundList__item']"
+        followers_path = "//a[@class='infoStats__statLink sc-link-light']"
+    
+        song_list = []
+        artist_list = []
+        publish_date_list = []
+        comment_list = []
+        plays_list = []
+        likes_list = []
+        repost_list = []
+        
+        for item in  driver.find_elements_by_xpath(item_path):
+            
+        #Pull Song Name
+            song_name = item.find_element_by_class_name('soundTitle__username').text
+            
+        #Pull Artist Name 
+            artist_name = item.find_element_by_class_name('soundTitle__title').text
+            
+        #Pull Publich Date 
+            publish_date = datetime.datetime.strptime(
+                    item.find_element_by_class_name('relativeTime')
+                    .get_attribute('datetime')\
+                    .replace('T',':')[0:-5],
+                    '%Y-%m-%d:%H:%M:%S')
+
+        #Pull Likes   
+            try:
+                likes = item.find_element_by_class_name('sc-button-like').text
+            except NoSuchElementException:
+                likes = "Like"
+        
+        #Pull Reposts   
+            try:
+                reposts = item.find_element_by_class_name('sc-button-repost').text
+            except NoSuchElementException:
+                likes = "Repost"
+            
+        #Pull plays and comments 
+            stats = item.find_elements_by_class_name('sc-ministats-item')
+            num_stats = len(stats)
+            
+            if num_stats == 0:
+                plays, comments = 0, 0
+                
+            elif num_stats == 1:
+                plays = int((re.split(" " ,stats[0].get_attribute('title'))[0]).replace(',',''))
+                comments = 0
+            
+            else:
+                for stat in stats:
+                     plays = int((re.split(" " ,stats[0].get_attribute('title'))[0]).replace(',',''))
+                     comments = int((re.split(" " ,stats[1].get_attribute('title'))[0]).replace(',',''))
+                     
+            song_list.append(song_name)
+            artist_list.append(artist_name)
+            publish_date_list.append(publish_date)
+            likes_list.append(likes)
+            repost_list.append(reposts)
+            plays_list.append(plays)
+            comment_list.append(comments)
+        
+        artist_followers = int((re.split(" " ,driver.find_element_by_xpath(followers_path)\
+                                         .get_attribute('title'))[0]).replace(',',''))
+        
+        run_time = datetime.datetime.now()
+        
+        print('songs: ' + str(len(song_list)))
+        print('artists: '+ str(len(artist_list)))
+        print('plays: '+ str(len(plays_list)))
+        print('comments: ' + str(len(comment_list)))
+        print('likes: ' + str(len(likes_list)))
+        print('reposts: ' + str(len(repost_list)))
+ 
+        artist_data = {'song_name': song_list,
+                       'artist_name': artist_list,
+                       'publish_date': publish_date_list,
+                       'plays': plays_list,
+                       'comments':comment_list,
+                       'likes': likes_list,
+                       'repost': repost_list,
+                       'artist_followers': artist_followers,
+                       'run_date': run_time}
+        
+        
+        pd.set_option('display.max_columns', None)
+        
+        artist_df = pd.DataFrame(artist_data)
+    
+    except TimeoutException:
+        print("artist does not exist")
+        artist_df = pd.DataFrame()
+    
+    return(artist_df)
+
+
+appended_data = pd.DataFrame()
+
+x = 0
+for url in artists_urls:
+    x = x+1
+    print()
+    print(str(x), url)
+    
+    try:
+        data = scrape_artist_page(url)
+        appended_data = pd.concat([appended_data, data])
+    except ValueError:
+        print(url + "---------------------------> length error")
+
+# =============================================================================
+# 
+# driver.quit()
+# 
+# appended_data = appended_data\
+# .reset_index(drop = True)\
+# .rename_axis('index')
+# 
+# data = Catalogue(appended_data)
+# 
+# Catalogue.save_data(data, song_metrics_data)
+# 
+# 
+# =============================================================================

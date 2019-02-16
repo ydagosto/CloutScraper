@@ -8,7 +8,8 @@ class Sc_scraper:
 	# Class object is the url to scrape. The constructor can take attributes to generate
 	# different types of urls. For charts, if url string is charts, then uses attributes
 	# to generate url.
-	def __init__(self, url_string , url_type_artist_name = None, genre = None, country = None):
+	def __init__(self, url_string , url_type_artist_name = None, genre = None, 
+	country = None):
 		
 		if url_string == "charts":
 			url = "https://soundcloud.com/charts/"
@@ -111,16 +112,12 @@ class Sc_scraper:
 		
 		return data
 		
-		
-	# Open headless Chrome browser for lazy page scraping
 	def open_artist_page(self):
 		
 		driver.get(self.url)
 		
 		return
 	
-	
-	# TO Scroll all the way to the bottom of lazy loading page
 	def scrolling(self):
 		
 		WebDriverWait(driver, 2).until(EC.visibility_of_element_located((By.CSS_SELECTOR, "ul.lazyLoadingList__list")))
@@ -147,8 +144,6 @@ class Sc_scraper:
 			
 		return
 		
-	
-	# To collect data from artist track page using selenium	
 	def collect_artist_info(self):
 	
 		# Grab elements in the page
@@ -165,18 +160,18 @@ class Sc_scraper:
         
 		for item in  driver.find_elements_by_xpath(item_path):
             
-		# Pull Song Name
+        # Pull Song Name
 			song_name = item.find_element_by_class_name('soundTitle__username').text
             
-		# Pull Artist Name
-			artist_name = item.find_element_by_class_name('soundTitle__title').text
+        # Pull Artist Name 
+            # artist_name = item.find_element_by_class_name('soundTitle__title').text
             
-		# Pull Publich Date 
-			publish_date = datetime.datetime.strptime(
-			item.find_element_by_class_name('relativeTime')
-			.get_attribute('datetime')
-			.replace('T',':')[0:-5],
-			'%Y-%m-%d:%H:%M:%S')
+        # Pull Publich Date 
+		publish_date = datetime.datetime.strptime(
+		item.find_element_by_class_name('relativeTime')
+		.get_attribute('datetime')
+		.replace('T',':')[0:-5],
+		'%Y-%m-%d:%H:%M:%S')
 
         # Pull Likes
 			try:
@@ -192,83 +187,77 @@ class Sc_scraper:
             
         # Pull plays and comments
 			stats = item.find_elements_by_class_name('sc-ministats-item')
-			num_stats = len(stats)
+            num_stats = len(stats)
             
-			if num_stats == 0:
-				plays, comments = 0, 0
+            if num_stats == 0:
+                plays, comments = 0, 0
                 
-			elif num_stats == 1:
-				plays = int((re.split(" " ,stats[0].get_attribute('title'))[0]).replace(',',''))
-				comments = 0
+            elif num_stats == 1:
+                plays = int((re.split(" " ,stats[0].get_attribute('title'))[0]).replace(',',''))
+                comments = 0
             
-			else:
-				for stat in stats:
-					plays = int((re.split(" " ,stats[0].get_attribute('title'))[0]).replace(',',''))
-					comments = int((re.split(" " ,stats[1].get_attribute('title'))[0]).replace(',',''))
+            else:
+                for stat in stats:
+                     plays = int((re.split(" " ,stats[0].get_attribute('title'))[0]).replace(',',''))
+                     comments = int((re.split(" " ,stats[1].get_attribute('title'))[0]).replace(',',''))
                      
-			song_list.append(song_name)
-			artist_list.append(artist_name)
-			publish_date_list.append(publish_date)
-			likes_list.append(likes)
-			repost_list.append(reposts)
-			plays_list.append(plays)
-			comment_list.append(comments)
+            # song_list.append(song_name)
+            # artist_list.append(artist_name)
+            # publish_date_list.append(publish_date)
+            # likes_list.append(likes)
+            # repost_list.append(reposts)
+            # plays_list.append(plays)
+            # comment_list.append(comments)
         
-		artist_followers = int((re.split(" " ,driver.find_element_by_xpath(followers_path)\
-                                         .get_attribute('title'))[0]).replace(',',''))
+        # artist_followers = int((re.split(" " ,driver.find_element_by_xpath(followers_path)\
+                                         # .get_attribute('title'))[0]).replace(',',''))
         
-		run_time = datetime.datetime.now()
+        # run_time = datetime.datetime.now()
 		
-		print()
-		print(self.url)
-		print('songs: ' + str(len(song_list)))
-		print('artists: '+ str(len(artist_list)))
-		print('plays: '+ str(len(plays_list)))
-		print('comments: ' + str(len(comment_list)))
-		print('likes: ' + str(len(likes_list)))
-		print('reposts: ' + str(len(repost_list)))
+		# print('songs: ' + str(len(song_list)))
+        # print('artists: '+ str(len(artist_list)))
+        # print('plays: '+ str(len(plays_list)))
+        # print('comments: ' + str(len(comment_list)))
+        # print('likes: ' + str(len(likes_list)))
+        # print('reposts: ' + str(len(repost_list)))
 	
-	
-		artist_data = {'song_name': song_list,
-                       'artist_name': artist_list,
-                       'publish_date': publish_date_list,
-                       'plays': plays_list,
-                       'comments':comment_list,
-                       'likes': likes_list,
-                       'repost': repost_list,
-                       'artist_followers': artist_followers,
-                       'run_date': run_time}
+		# artist_data = {'song_name': song_list,
+                       # 'artist_name': artist_list,
+                       # 'publish_date': publish_date_list,
+                       # 'plays': plays_list,
+                       # 'comments':comment_list,
+                       # 'likes': likes_list,
+                       # 'repost': repost_list,
+                       # 'artist_followers': artist_followers,
+                       # 'run_date': run_time}
         
         
-      
-		artist_df = pd.DataFrame(artist_data)
+        # pd.set_option('display.max_columns', None)
+        
+        # artist_df = pd.DataFrame(artist_data)
 		
-		return artist_df
-	
-	
-	# To Print and create empty data frame if there is nothing in the opened page		
-	def non_existent_artist(self):
+		# return artist_df
 		
-		print("artist does not exist")
-		artist_df = pd.DataFrame()
+	# def non_existent_artist(self):
 		
-		return artist_df
-	
-	
-	# To open page, collect data or return empty df if artsit changed url or deleted page
-	def artist_scraper(self):
-	
-		self.open_artist_page()
+		# print("artist does not exist")
+        # artist_df = pd.DataFrame()
 		
-		try:
-			self.scrolling()
+		# return artist_df
+		
+	# def artist_data_pull(self):
+	
+		# self.open_artist_page()
+		
+		# try:
+			# self.scrolling()
 			
-			artist_df = self.collect_artist_info()
+			# artist_df = self.collect_artist_info()
 			
-		except TimeoutException:
-			artist_df = self.non_existent_artist()
+		# except TimeoutException:
+			# artist_df = self.non_existent_artist()
 			
-		return artist_df
+		# return artist_df
 		
 		
 	

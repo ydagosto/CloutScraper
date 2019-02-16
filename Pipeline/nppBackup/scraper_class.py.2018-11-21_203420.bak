@@ -219,8 +219,6 @@ class Sc_scraper:
         
 		run_time = datetime.datetime.now()
 		
-		print()
-		print(self.url)
 		print('songs: ' + str(len(song_list)))
 		print('artists: '+ str(len(artist_list)))
 		print('plays: '+ str(len(plays_list)))

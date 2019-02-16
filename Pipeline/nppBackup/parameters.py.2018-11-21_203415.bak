@@ -17,7 +17,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 
 # Class with webscraping driver based on api url
-scraper_class = open("scraper_class.py", 'r').read()
+scraper_class = open("scraper_class_V2.py", 'r').read()
 exec(scraper_class)
 
 # Class managing catalogue dataframes

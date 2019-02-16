@@ -1,0 +1,48 @@
+
+parameters = open("parameters.py", 'r').read()
+exec(parameters)
+
+# Trying to scrape Ronny J's soundcloud links
+# End goal: Get all tracks and info about tracks by just giving the link to his soundcloud.
+
+chrome_options = Options()  
+chrome_options.add_argument("--headless")
+
+driver = webdriver.Chrome(executable_path='../CloutScraper/chromedriver_win32/chromedriver.exe', chrome_options = chrome_options)
+
+artists_urls = list(pd.read_csv(artist_repository, index_col = 0)['artist_url'])
+
+for artist_name in artists_urls:
+	artist_url = Sc_scraper("artist", artist_name)
+	data = Catalogue(Sc_scraper.artist_scraper(artist_url))
+	
+
+
+appended_data = pd.DataFrame()
+
+x = 0
+for url in artists_urls:
+    x = x+1
+    print()
+    print(str(x), url)
+    
+    try:
+        data = scrape_artist_page(url)
+        appended_data = pd.concat([appended_data, data])
+    except ValueError:
+        print(url + "---------------------------> length error")
+
+# =============================================================================
+# 
+# driver.quit()
+# 
+# appended_data = appended_data\
+# .reset_index(drop = True)\
+# .rename_axis('index')
+# 
+# data = Catalogue(appended_data)
+# 
+# Catalogue.save_data(data, song_metrics_data)
+# 
+# 
+# =============================================================================

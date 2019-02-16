@@ -13,10 +13,12 @@ external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
 #=================================================
 # Select working Directory - get data
-os.chdir("../../Data")
+# =============================================================================
+# os.chdir("../../Data")
+# =============================================================================
 
 # Read in Dataset to do QC on 
-catalogue_name = "sc_hot_and_top.csv"
+catalogue_name = "../../Data/sc_hot_and_top.csv"
 
 current_catalogue = pd.read_csv(catalogue_name, index_col = 0)
 
@@ -47,7 +49,8 @@ songs_per_run = pd.DataFrame(current_catalogue\
 # Generate Dashboard
 
 
-app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
+app = dash.Dash(__name__, external_stylesheets= external_stylesheets)
+
 
 app.layout = html.Div(
         style={'width': '100%', 
