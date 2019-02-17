@@ -1,0 +1,1 @@
+current_catalogue = Catalogue(pd.read_csv(catalogue_name, index_col = 0))
