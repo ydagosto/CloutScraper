@@ -10,28 +10,37 @@ class Catalogue:
 	def __init__(self, artist_catalogue = None):
 		if artist_catalogue is None:
 			self.catalogue = pd.DataFrame([], columns = [
-							 'artist_url',
-                             'artist_name',
-                             'song_url',
-                             'song_name',
-                             'country',
-                             'genre',
-                             'playlist_type',
-                             'run_date',
-                             'playlist',
-                             'runID'])
+			'artist_url',
+			'artist_name',
+            'song_url',
+            'song_name',
+            'country',
+            'genre',
+			'playlist_type',
+            'run_date',
+            'playlist',
+            'runID'])
 		else:
 			self.catalogue = artist_catalogue
 		
 	
-	# To print the dataframe
+	# To print info on the dataframe
 	def print_info_catalogue(self):
 		
 		pd.set_option('display.max_columns', None)
 		
 		print(self.catalogue.info())
 		
+		
+	# To print the dataframe
+	def print_catalogue(self):
+		
+		pd.set_option('display.max_columns', None)
+		
+		print(self.catalogue)
+		
 		return
+	
 	
 	# Takes in catalogue, retuns tuple of max run_id and next run_id	
 	def run_id_gen(self):

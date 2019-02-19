@@ -120,31 +120,43 @@ class Sc_scraper:
 		return
 	
 	
-	# TO Scroll all the way to the bottom of lazy loading page
+	# To Scroll all the way to the bottom of lazy loading page
 	def scrolling(self):
-		
+	
 		WebDriverWait(driver, 2).until(EC.visibility_of_element_located((By.CSS_SELECTOR, "ul.lazyLoadingList__list")))
     
-        # scrolling to the bottom of the page
-		lazy_soundList_loaded = 0
-		loaded_songs = len(driver.find_elements_by_class_name('soundList__item'))
-		except_count = 0
+		#check how many songs were uploaded by the artist
+		tracks_path = "//a[@class='infoStats__statLink sc-link-light']"
+				
+		artist_tracks = int((re.split(" " ,driver.find_elements_by_xpath(tracks_path)[2]\
+		.get_attribute('title'))[0]).replace(',',''))
 		
-		while lazy_soundList_loaded == 0:# waits for the "paging-eof" class to appear when list is loaded
+		# scrolling to the bottom of the page
 		
-			driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-            
-			try:
-				WebDriverWait(driver, 2).until((lambda x: len(driver.find_elements_by_class_name('soundList__item'))!= loaded_songs))
-                
-         # couldn't figure out how to get it to break when it finds the eof element, just catching timeout instead
-			except TimeoutException:
-				except_count += 1
-				if except_count == 2:
-					break
-			loaded_songs = len(driver.find_elements_by_class_name('soundList__item'))
-			lazy_soundList_loaded = len(driver.find_elements_by_class_name('paging-eof'))
+		if artist_tracks < 750: # set a cut off for pages that upload too many tracks
 			
+			eof_page = len(driver.find_elements_by_class_name('paging-eof'))
+			
+			while eof_page == 0:# waits for the "paging-eof" class to appear when list is loaded
+			
+				driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+				eof_page = len(driver.find_elements_by_class_name('paging-eof'))
+			
+			print()
+			print(self.url + " - Opened and done scrolling")
+		
+		else:#if too many were posted
+			page_loads = 0 # 
+			
+			#We will make only about 500 requests - how many songs we get depends on internet speed	
+			while page_loads <= 500:
+			
+				driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+				page_loads += 1
+			
+			print()			
+			print(self.url + " - Opened but too long to scroll")
+		
 		return
 		
 	
@@ -219,8 +231,6 @@ class Sc_scraper:
         
 		run_time = datetime.datetime.now()
 		
-		print()
-		print(self.url)
 		print('songs: ' + str(len(song_list)))
 		print('artists: '+ str(len(artist_list)))
 		print('plays: '+ str(len(plays_list)))
@@ -237,7 +247,8 @@ class Sc_scraper:
                        'likes': likes_list,
                        'repost': repost_list,
                        'artist_followers': artist_followers,
-                       'run_date': run_time}
+                       'run_date': run_time,
+					   'runID': int(0)}
         
         
       
@@ -249,8 +260,13 @@ class Sc_scraper:
 	# To Print and create empty data frame if there is nothing in the opened page		
 	def non_existent_artist(self):
 		
+		dfcolumns = ['song_name', 'artist_name', 'publish_date',
+                       'plays','comments','likes',
+					   'repost','artist_followers','run_date',
+					   'runID']
+					   
 		print("artist does not exist")
-		artist_df = pd.DataFrame()
+		artist_df = pd.DataFrame(columns = dfcolumns)
 		
 		return artist_df
 	
@@ -262,14 +278,11 @@ class Sc_scraper:
 		
 		try:
 			self.scrolling()
-			
 			artist_df = self.collect_artist_info()
-			
+				
 		except TimeoutException:
 			artist_df = self.non_existent_artist()
+
 			
 		return artist_df
-		
-		
-	
 	
