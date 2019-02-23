@@ -1,37 +1,6 @@
-## Welcome to GitHub Pages
+# CloutScraper
 
-You can use the [editor on GitHub](https://github.com/anTIMattErz/SlapScience/edit/master/README.md) to maintain and preview the content for your website in Markdown files.
+## Summary
+Personal project to explore data collection, analysis, and visualization by webscraping data on songs posted to SoundCloud.com. To do this, I will be using Beautiful Soup and Selenium to collect statitcs for songs of a growing catalogue of artists. Ultimately, I will be tracking plays, comments, and reposts over time, using these features to gauge traction on the platform and forecast whether a track is going to be the next viral hit before it reaches the masses.
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
-
-### Markdown
-
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
-
-```markdown
-Syntax highlighted code block
-
-# Header 1
-## Header 2
-### Header 3
-
-- Bulleted
-- List
-
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
-```
-
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/anTIMattErz/SlapScience/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://help.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
+## Process
