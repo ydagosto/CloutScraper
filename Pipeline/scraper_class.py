@@ -117,6 +117,9 @@ class Sc_scraper:
 		
 		driver.get(self.url)
 		
+		print()
+		print("Opening: " + self.url)
+		
 		return
 	
 	
@@ -131,30 +134,33 @@ class Sc_scraper:
 		artist_tracks = int((re.split(" " ,driver.find_elements_by_xpath(tracks_path)[2]\
 		.get_attribute('title'))[0]).replace(',',''))
 		
-		# scrolling to the bottom of the page
+		# scrolling to the bottom of the page - sometimes there might be an error in loading the page
+		#not sure what the cause of this is
+		error_count = len(driver.find_elements_by_class_name('inlineError__message'))
 		
 		if artist_tracks < 750: # set a cut off for pages that upload too many tracks
 			
 			eof_page = len(driver.find_elements_by_class_name('paging-eof'))
-			
-			while eof_page == 0:# waits for the "paging-eof" class to appear when list is loaded
+						
+			while (eof_page == 0) & (error_count == 0):# waits for the "paging-eof" class to appear when list is loaded
 			
 				driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
 				eof_page = len(driver.find_elements_by_class_name('paging-eof'))
+				error_count = len(driver.find_elements_by_class_name('inlineError__message'))
 			
-			print()
-			print(self.url + " - Opened and done scrolling")
+			print("Done scrolling")
 		
 		else:#if too many were posted
-			page_loads = 0 # 
+			page_loads = 0		
 			
 			#We will make only about 500 requests - how many songs we get depends on internet speed	
-			while page_loads <= 500:
+			while (page_loads <= 300) & (error_count == 0):
 			
 				driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-				page_loads += 1
-			
-			print()			
+				error_count = len(driver.find_elements_by_class_name('inlineError__message'))
+				
+				page_loads = page_loads + 1
+				
 			print(self.url + " - Opened but too long to scroll")
 		
 		return
@@ -177,11 +183,11 @@ class Sc_scraper:
         
 		for item in  driver.find_elements_by_xpath(item_path):
             
-		# Pull Song Name
-			song_name = item.find_element_by_class_name('soundTitle__username').text
-            
 		# Pull Artist Name
-			artist_name = item.find_element_by_class_name('soundTitle__title').text
+			artist_name = item.find_element_by_class_name('soundTitle__username').text
+            
+		# Pull Song Name
+			song_name = item.find_element_by_class_name('soundTitle__title').text
             
 		# Pull Publich Date 
 			publish_date = datetime.datetime.strptime(
@@ -217,7 +223,7 @@ class Sc_scraper:
 				for stat in stats:
 					plays = int((re.split(" " ,stats[0].get_attribute('title'))[0]).replace(',',''))
 					comments = int((re.split(" " ,stats[1].get_attribute('title'))[0]).replace(',',''))
-                     
+		                     
 			song_list.append(song_name)
 			artist_list.append(artist_name)
 			publish_date_list.append(publish_date)
@@ -226,17 +232,23 @@ class Sc_scraper:
 			plays_list.append(plays)
 			comment_list.append(comments)
         
+		# Pull Artist Followerd
 		artist_followers = int((re.split(" " ,driver.find_element_by_xpath(followers_path)\
                                          .get_attribute('title'))[0]).replace(',',''))
+										 
+		# Pull Error - T/F
+		error = len(driver.find_elements_by_class_name('inlineError__message'))								 
         
 		run_time = datetime.datetime.now()
 		
+		print('error:' + str(error))
 		print('songs: ' + str(len(song_list)))
 		print('artists: '+ str(len(artist_list)))
 		print('plays: '+ str(len(plays_list)))
 		print('comments: ' + str(len(comment_list)))
 		print('likes: ' + str(len(likes_list)))
 		print('reposts: ' + str(len(repost_list)))
+		
 	
 	
 		artist_data = {'song_name': song_list,
@@ -248,6 +260,7 @@ class Sc_scraper:
                        'repost': repost_list,
                        'artist_followers': artist_followers,
                        'run_date': run_time,
+					   'error_at_scroll': error,
 					   'runID': int(0)}
         
         
@@ -263,8 +276,8 @@ class Sc_scraper:
 		dfcolumns = ['song_name', 'artist_name', 'publish_date',
                        'plays','comments','likes',
 					   'repost','artist_followers','run_date',
-					   'runID']
-					   
+					   'error_at_scroll', 'runID']
+			   
 		print("artist does not exist")
 		artist_df = pd.DataFrame(columns = dfcolumns)
 		
