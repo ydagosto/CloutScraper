@@ -27,11 +27,11 @@ dataframe = pd.DataFrame(current_catalogue)
 
 # Unique observations of each column to display
 stats_per_run = dataframe\
-.groupby(['runID'])\
+.groupby(['run_id'])\
 .agg(aggregation)\
 .reset_index()
 
-stats_per_run.columns = ['runID', 'genre', 'country', 'artist_name','song_name']
+stats_per_run.columns = ['run_id', 'genre', 'country', 'artist_name','song_name']
 
 # Generate Bokeh graphs to display -
 # One for Genre and Countries
@@ -44,13 +44,13 @@ genre_country = figure(plot_width=750,
                        title = "Genres and Country Charts scraped per run",
                        x_axis_label = "Run Number")
 
-genre_country.step(stats_per_run['runID'].values,
+genre_country.step(stats_per_run['run_id'].values,
                    stats_per_run['genre'].values,
                    legend = 'Genre',
                    color = 'red',
                    line_width=2)
 
-genre_country.step(stats_per_run['runID'].values,
+genre_country.step(stats_per_run['run_id'].values,
                    stats_per_run['country'].values,
                    legend = 'Country',
                    line_width=2)
@@ -66,12 +66,12 @@ artist_song = figure(plot_width=750,
                      x_axis_label = "Run Number",
                      x_range = genre_country.x_range)
 
-artist_song.line(stats_per_run['runID'].values,
+artist_song.line(stats_per_run['run_id'].values,
                  stats_per_run['artist_name'].values,
                  legend = 'Artists',
                  line_width=2)
 
-artist_song.line(stats_per_run['runID'].values,
+artist_song.line(stats_per_run['run_id'].values,
                  stats_per_run['song_name'].values,
                  legend = 'Songs',
                  color = 'red',
@@ -83,14 +83,14 @@ artist_song.legend.location = "bottom_left"
 ##### First and Last Seen by Distinct Artist
 ## last seen artist
 
-runid_agg = {
-        'runID':{'frist_seen': 'min',
+run_id_agg = {
+        'run_id':{'frist_seen': 'min',
                  'last_seen' : 'max'}
         }
     
 ids_per_artist = dataframe\
 .groupby(['artist_name'])\
-.agg(runid_agg)\
+.agg(run_id_agg)\
 .reset_index()
 
 ids_per_artist.columns = ['artist_name', 'first_seen', 'last_seen']

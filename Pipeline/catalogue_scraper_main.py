@@ -16,6 +16,7 @@ max_run_id, next_run_id = Catalogue.run_id_gen(current_catalogue)
 
 appended_data = Catalogue()
 
+
 # Error handling: Attempt to run the scraper
 try:
     # Loop through all combinations and append the data
@@ -62,8 +63,3 @@ except:
     log.write('execution failed at ' + str(datetime.datetime.now()))
     log.write('\n')
     log.close()
-
-
-
-
-

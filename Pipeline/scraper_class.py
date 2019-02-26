@@ -54,6 +54,12 @@ class Sc_scraper:
 		url_type, genre, country = self.deconstruct_charts_url()
 		run_time = datetime.datetime.now()
 		
+		print()
+		print("Scraping: " + self.url)
+		print("Chart Type: " + url_type) 
+		print("Genre - " + genre)
+		print("Country - " + country)
+		
 		# lists to pack with data
 		song_url_list = []# list containing song url soundcloud extensions
 		song_name_list = []# list containing song names as the appear on site
@@ -95,7 +101,7 @@ class Sc_scraper:
 			  "playlist_type" : url_type,
 			  "run_date" : run_time,
 			  "playlist": self.url,
-			  "runID": run_number}
+			  "run_id": run_number}
 		
 		#generate data frame
 		data = pd.DataFrame(df, 
@@ -104,10 +110,12 @@ class Sc_scraper:
 							"song_url", "song_name",
 							"country", "genre",
 							"playlist_type","run_date",
-							"playlist", "runID"
+							"playlist", "run_id"
 							])
 										   
 		data.index = data.index + 1# chart num from 0 to 1
+		
+		print("Tracks Scraped: " + str(len(song_name_list)))
 		
 		return data
 		
@@ -128,46 +136,28 @@ class Sc_scraper:
 	
 		WebDriverWait(driver, 2).until(EC.visibility_of_element_located((By.CSS_SELECTOR, "ul.lazyLoadingList__list")))
     
-		#check how many songs were uploaded by the artist
-		tracks_path = "//a[@class='infoStats__statLink sc-link-light']"
-				
-		artist_tracks = int((re.split(" " ,driver.find_elements_by_xpath(tracks_path)[2]\
-		.get_attribute('title'))[0]).replace(',',''))
-		
 		# scrolling to the bottom of the page - sometimes there might be an error in loading the page
-		#not sure what the cause of this is
+		# not sure what the cause of this is
+		# find eof of file page or find error link to retry reloading
 		error_count = len(driver.find_elements_by_class_name('inlineError__message'))
-		
-		if artist_tracks < 750: # set a cut off for pages that upload too many tracks
-			
-			eof_page = len(driver.find_elements_by_class_name('paging-eof'))
+		eof_page = len(driver.find_elements_by_class_name('paging-eof'))
+		number_of_requests = 0
 						
-			while (eof_page == 0) & (error_count == 0):# waits for the "paging-eof" class to appear when list is loaded
-			
-				driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-				eof_page = len(driver.find_elements_by_class_name('paging-eof'))
-				error_count = len(driver.find_elements_by_class_name('inlineError__message'))
-			
-			print("Done scrolling")
+		while (eof_page == 0) & (error_count == 0) & (number_of_requests < 500):# waits for the "paging-eof" class to appear when list is loaded
 		
-		else:#if too many were posted
-			page_loads = 0		
-			
-			#We will make only about 500 requests - how many songs we get depends on internet speed	
-			while (page_loads <= 300) & (error_count == 0):
-			
-				driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-				error_count = len(driver.find_elements_by_class_name('inlineError__message'))
-				
-				page_loads = page_loads + 1
-				
-			print(self.url + " - Opened but too long to scroll")
+		# scroll and stop if you find eof or error so you are not stuck in loop in case no eof found
+			driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+			eof_page = len(driver.find_elements_by_class_name('paging-eof'))
+			error_count = len(driver.find_elements_by_class_name('inlineError__message'))
+			number_of_requests += 1
+		
+		print("Done scrolling. Requests: " + str(number_of_requests))
 		
 		return
 		
 	
 	# To collect data from artist track page using selenium	
-	def collect_artist_info(self):
+	def collect_artist_info(self, run_number):
 	
 		# Grab elements in the page
 		item_path = "//*[@class='userMain__content']//li[@class='soundList__item']"
@@ -181,6 +171,7 @@ class Sc_scraper:
 		likes_list = []
 		repost_list = []
         
+		# for each song item
 		for item in  driver.find_elements_by_xpath(item_path):
             
 		# Pull Artist Name
@@ -196,6 +187,7 @@ class Sc_scraper:
 			.replace('T',':')[0:-5],
 			'%Y-%m-%d:%H:%M:%S')
 
+		# some songs do not have likes, reposts to songs -> will we use error handling here
         # Pull Likes
 			try:
 				likes = item.find_element_by_class_name('sc-button-like').text
@@ -206,8 +198,10 @@ class Sc_scraper:
 			try:
 				reposts = item.find_element_by_class_name('sc-button-repost').text
 			except NoSuchElementException:
-				likes = "Repost"
-            
+				reposts = "Repost"
+        
+		# Some songs have no plays, and comments or only plays
+		# based on number of items found, we can determine what to do
         # Pull plays and comments
 			stats = item.find_elements_by_class_name('sc-ministats-item')
 			num_stats = len(stats)
@@ -237,6 +231,7 @@ class Sc_scraper:
                                          .get_attribute('title'))[0]).replace(',',''))
 										 
 		# Pull Error - T/F
+		# We wan to log if there was an error in loading page for run
 		error = len(driver.find_elements_by_class_name('inlineError__message'))								 
         
 		run_time = datetime.datetime.now()
@@ -261,7 +256,7 @@ class Sc_scraper:
                        'artist_followers': artist_followers,
                        'run_date': run_time,
 					   'error_at_scroll': error,
-					   'runID': int(0)}
+					   'run_id': int(run_number)}
         
         
       
@@ -276,7 +271,7 @@ class Sc_scraper:
 		dfcolumns = ['song_name', 'artist_name', 'publish_date',
                        'plays','comments','likes',
 					   'repost','artist_followers','run_date',
-					   'error_at_scroll', 'runID']
+					   'error_at_scroll', 'run_id']
 			   
 		print("artist does not exist")
 		artist_df = pd.DataFrame(columns = dfcolumns)
@@ -285,13 +280,14 @@ class Sc_scraper:
 	
 	
 	# To open page, collect data or return empty df if artsit changed url or deleted page
-	def artist_scraper(self):
+	def artist_scraper(self, run_number):
 	
 		self.open_artist_page()
 		
+		# some pages get shut down -use error handling if we can't open it
 		try:
 			self.scrolling()
-			artist_df = self.collect_artist_info()
+			artist_df = self.collect_artist_info(run_number)
 				
 		except TimeoutException:
 			artist_df = self.non_existent_artist()

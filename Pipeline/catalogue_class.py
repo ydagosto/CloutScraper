@@ -19,7 +19,7 @@ class Catalogue:
 			'playlist_type',
             'run_date',
             'playlist',
-            'runID'])
+            'run_id'])
 		else:
 			self.catalogue = artist_catalogue
 		
@@ -45,7 +45,7 @@ class Catalogue:
 	# Takes in catalogue, retuns tuple of max run_id and next run_id	
 	def run_id_gen(self):
 	
-		max_run_id = self.catalogue['runID'].max()
+		max_run_id = self.catalogue['run_id'].max()
 		next_run_id = max_run_id + 1
 
 		return max_run_id, next_run_id
@@ -69,11 +69,11 @@ class Catalogue:
 		if drop is None:
 			self.catalogue = self.catalogue\
 					.reset_index(drop = False)\
-					.rename_axis('index')
+					.rename_axis('unique_id')
 		else:
 			self.catalogue = self.catalogue\
 					.reset_index(drop = True)\
-					.rename_axis('index')
+					.rename_axis('unique_id')
 				
 		return self
 		
@@ -87,8 +87,8 @@ class Catalogue:
         "chart_num" : {"max_chart_num" : "max"},
         "run_date" : {"first_seen" : "min", 
 		"last_seen": "max"},
-        "runID" : {"last_runID" : "max",
-		"first_runID" : "min"}
+        "run_id" : {"last_run_id" : "max",
+		"first_run_id" : "min"}
         }
 		
 		repository = self.catalogue
@@ -96,15 +96,16 @@ class Catalogue:
 		# Distinct artist repository
 		artists = repository\
 		.groupby(
-		['artist_url', 'artist_name']
+		['artist_url', 'artist_name', 'genre', 'country']
 		)\
 		.agg(aggregation)\
 		.reset_index()
 		
 		artists.columns = ['artist_url', 'artist_name',
+		'genre', 'country',
 		'max_chart_num', 'last_seen',
-		'first_seen', 'last_runID',
-		'first_runID']
+		'first_seen', 'last_run_id',
+		'first_run_id']
 		
 		artists = Catalogue(artists)
 		
@@ -124,7 +125,7 @@ class Catalogue:
 		'country', 'genre', 
 		'playlist_type', 'max_chart_num', 
 		'last_seen','first_seen', 
-		'last_runID','first_runID']
+		'last_run_id','first_run_id']
 		
 		songs = Catalogue(songs)
 		

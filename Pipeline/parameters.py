@@ -43,11 +43,22 @@ countries = ['AU', 'CA', 'FR',
              'NZ', 'GB', 'US', 
              'all-countries']
 
-genres = ['alternativerock', 'ambient', 'classical',
+countries = ['US']
+
+genres = ['all-music','alternativerock', 'ambient','classical',
               'country', 'danceedm', 'dancehall',
               'deephouse', 'disco', 'drumbass',
               'dubstep', 'electronic','folksingersongwriter',
-              'all-music', 'all-audio']
+			  'hiphoprap','house', 'indie', 'jazzblues',
+			  'latin', 'metal', 'piano',
+			  'pop', 'rbsoul', 'reggae',
+			  'reggaeton', 'rock', 'soundtrack',
+			  'techno', 'trance', 'trap',
+			  'triphop', 'world']
+			  
+main_categories = ['hiphoprap', 'all-music','danceedm',
+					'electronic', 'rbsoul', 'rock',
+					'latin', 'pop', 'trap']
 			  
 # generate all combinations of api type, genre, and country
 api_genre_country_combos = list(product(api_types, genres, countries))
