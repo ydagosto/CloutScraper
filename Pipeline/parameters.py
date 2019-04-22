@@ -38,10 +38,10 @@ song_metrics_data = "song_metrics.csv"
 # charts will be new and top and for each available country and genre
 api_types = ["top", "new"]
 
-countries = ['AU', 'CA', 'FR',
-             'DE', 'IE', 'NL', 
-             'NZ', 'GB', 'US', 
-             'all-countries']
+# countries = ['AU', 'CA', 'FR',
+             # 'DE', 'IE', 'NL', 
+             # 'NZ', 'GB', 'US', 
+             # 'all-countries']
 
 countries = ['US']
 

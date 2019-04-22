@@ -9,13 +9,17 @@ This will include data for artist, track url and name. Keeping only distincts
 parameters = open("parameters.py", 'r').read()
 exec(parameters)
 
+log = open(r"./chart_scraper_run_log.log", 'a')
+log.write('execution started at ' + str(datetime.datetime.now()))
+log.write('\n')
+log.close()
+
 # =============================================================================
 current_catalogue = Catalogue(pd.read_csv(catalogue_name, index_col = 0))
 
 max_run_id, next_run_id = Catalogue.run_id_gen(current_catalogue)
 
 appended_data = Catalogue()
-
 
 # Error handling: Attempt to run the scraper
 try:
@@ -46,7 +50,7 @@ try:
 
 	# ==========================================================================
     # Log Run
-    log = open(r"./run_log.log", 'a')
+    log = open(r"./chart_scraper_run_log.log", 'a')
     
     # Write date/time
     log.write('execution successful at ' + str(datetime.datetime.now()))
@@ -57,7 +61,7 @@ try:
 # If fails then log that the run failed
 except:
     # Log Run
-    log = open(r"./run_log.log", 'a')
+    log = open(r"./chart_scraper_run_log.log", 'a')
     
     # Write date/time
     log.write('execution failed at ' + str(datetime.datetime.now()))
