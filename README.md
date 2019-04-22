@@ -1,10 +1,10 @@
 # CloutScraper
 
 ## Summary
-Personal project to explore data collection, analysis, and visualization by webscraping data on songs posted to SoundCloud.com. To do this, I will be using Beautiful Soup and Selenium to collect statitcs for songs of a growing catalogue of artists. Ultimately, I will be tracking plays, comments, and reposts over time, using these features to gauge traction on the platform and forecast whether a track is going to be the next viral hit before it reaches the masses.
+Personal project to explore data collection, analysis, and visualization by webscraping data on songs posted to SoundCloud.com. To do this, I will be using Beautiful Soup and Selenium to collect statitcs for songs of a growing catalogue of artists. Ultimately, I will be tracking plays, comments, and reposts over time, using these features to gauge traction on the platform and forecast whether a track is going to be the next hit.
 
 ## Web-Scraping Methodology
-To scrape data for tracks over time through artists pages, it is necessary to collect artist urls and then iterate over them. That said, before being able to collect information on plays, comments, likes, and reposts per song, I need repositories of artists' urls that I can scrape. By scraping playlists, I am able to generate a growing catalogue of artists and their links.
+By scraping playlists, I generate a growing catalogue of artists and their links. After that, I iterate over artis page urls and scrape information on plays, comments, likes, and reposts for each song. Iterating over artist pages allows me to scrape data for tracks over time.
 
 ### Generating a Catalogue of Artists
 To collect artist urls, I scrape SoundCould charts for Top50 and for New & Hot tracks for the USA and all music genres. These charts are udated daily and allow us to generate a growing catalogue of urls of artists. 
