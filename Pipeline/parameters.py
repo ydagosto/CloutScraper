@@ -1,4 +1,21 @@
 # import packages
+# import packages
+import os
+import urllib.request
+from bs4 import BeautifulSoup
+from bs4 import SoupStrainer
+import pandas as pd
+import datetime
+from itertools import product
+import re
+
+from selenium import webdriver
+from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.chrome.options import Options
+from selenium.common.exceptions import TimeoutException
+from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
 
 # Class with webscraping driver based on api url
 scraper_class = open("scraper_class.py", 'r').read()
