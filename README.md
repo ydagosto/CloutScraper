@@ -14,3 +14,7 @@ These pages are static and easily scraped using Beautiful Soup. The Sc_scraper c
 Once I have a catalogue of artist urls, I loop over them to scrape data for artist followers, song plays, comments, likes, and reposts. 
 Using the Sc_scraper class I create an object that is the url of the artists'  page based on specified parameters (url type, and artist name). SoundCould's artists' tracks pages use lazy loading, so I use Selenium webdriver to open a Chrome Browser. The scrolling class function, scrolls to the bottom of the page until the EOF mark. 
 The collect_artist_info class function uses Selenium to find elements on the page based on xpath and class name, collects relevant data, and returns a dataframe for the artist. 
+
+#### Notes
+- To run this you will need to download a chromedriver to run on selenium. Include the path to your chrome driver at line 21 of the artist_scraper_main.py script - driver = webdriver.Chrome(executable_path='/yourpath/chromedriver.exe', options = chrome_options
+- The data is going to be generated in the ../Data folder which includes empty csv's to be populated at the first run of the scraper
