@@ -47,7 +47,7 @@ class Sc_scraper:
 		
 	
 	# Takes url of charts website and scrapes in catalogue type df -> see catalogue class
-	def chart_scraper(self, run_number):
+	def chart_scraper(self):
 	
 		# url of soundcloud page to scrape + read from page using urllib
 		content = urllib.request.urlopen(self.url).read()
@@ -100,8 +100,7 @@ class Sc_scraper:
 			  "genre" : genre,
 			  "playlist_type" : url_type,
 			  "run_date" : run_time,
-			  "playlist": self.url,
-			  "run_id": run_number}
+			  "playlist": self.url}
 		
 		#generate data frame
 		data = pd.DataFrame(df, 
@@ -110,7 +109,7 @@ class Sc_scraper:
 							"song_url", "song_name",
 							"country", "genre",
 							"playlist_type","run_date",
-							"playlist", "run_id"
+							"playlist"
 							])
 										   
 		data.index = data.index + 1# chart num from 0 to 1
@@ -157,7 +156,7 @@ class Sc_scraper:
 		
 	
 	# To collect data from artist track page using selenium	
-	def collect_artist_info(self, run_number):
+	def collect_artist_info(self):
 	
 		# Grab elements in the page
 		item_path = "//*[@class='userMain__content']//li[@class='soundList__item']"
@@ -255,8 +254,7 @@ class Sc_scraper:
                        'repost': repost_list,
                        'artist_followers': artist_followers,
                        'run_date': run_time,
-					   'error_at_scroll': error,
-					   'run_id': int(run_number)}
+					   'error_at_scroll': error}
         
         
       
@@ -271,7 +269,7 @@ class Sc_scraper:
 		dfcolumns = ['song_name', 'artist_name', 'publish_date',
                        'plays','comments','likes',
 					   'repost','artist_followers','run_date',
-					   'error_at_scroll', 'run_id']
+					   'error_at_scroll']
 			   
 		print("artist does not exist")
 		artist_df = pd.DataFrame(columns = dfcolumns)
@@ -280,14 +278,14 @@ class Sc_scraper:
 	
 	
 	# To open page, collect data or return empty df if artsit changed url or deleted page
-	def artist_scraper(self, run_number):
+	def artist_scraper(self):
 	
 		self.open_artist_page()
 		
 		# some pages get shut down -use error handling if we can't open it
 		try:
 			self.scrolling()
-			artist_df = self.collect_artist_info(run_number)
+			artist_df = self.collect_artist_info()
 				
 		except TimeoutException:
 			artist_df = self.non_existent_artist()

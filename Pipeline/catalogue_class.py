@@ -18,8 +18,7 @@ class Catalogue:
             'genre',
 			'playlist_type',
             'run_date',
-            'playlist',
-            'run_id'])
+            'playlist'])
 		else:
 			self.catalogue = artist_catalogue
 		
@@ -86,9 +85,7 @@ class Catalogue:
 		aggregation = {
         "chart_num" : {"max_chart_num" : "max"},
         "run_date" : {"first_seen" : "min", 
-		"last_seen": "max"},
-        "run_id" : {"last_run_id" : "max",
-		"first_run_id" : "min"}
+		"last_seen": "max"}
         }
 		
 		repository = self.catalogue
@@ -104,8 +101,7 @@ class Catalogue:
 		artists.columns = ['artist_url', 'artist_name',
 		'genre', 'country',
 		'max_chart_num', 'last_seen',
-		'first_seen', 'last_run_id',
-		'first_run_id']
+		'first_seen']
 		
 		artists = Catalogue(artists)
 		
@@ -124,8 +120,7 @@ class Catalogue:
 		'artist_url', 'artist_name' , 
 		'country', 'genre', 
 		'playlist_type', 'max_chart_num', 
-		'last_seen','first_seen', 
-		'last_run_id','first_run_id']
+		'last_seen','first_seen']
 		
 		songs = Catalogue(songs)
 		

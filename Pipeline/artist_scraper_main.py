@@ -10,10 +10,6 @@ log.close()
 # =============================================================================
 current_catalogue = Catalogue(pd.read_csv(song_metrics_data, index_col = 0))
 
-max_run_id, next_run_id = Catalogue.run_id_gen(current_catalogue)
-
-print(next_run_id)
-
 empty_df = pd.DataFrame([])
 appended_data = Catalogue(empty_df)
 
@@ -32,7 +28,7 @@ try:
     
     for artist_name in artists_urls:
     	artist_url = Sc_scraper("artist", artist_name)
-    	data = Catalogue(Sc_scraper.artist_scraper(artist_url, next_run_id))
+    	data = Catalogue(Sc_scraper.artist_scraper(artist_url))
     		
     	appended_data = Catalogue.union_catalogue(appended_data, data)
     
