@@ -18,7 +18,7 @@ try:
     chrome_options = Options()  
     chrome_options.add_argument("--headless")
     
-    driver = webdriver.Chrome(executable_path='../CloutScraper/chromedriver_win32/chromedriver.exe', chrome_options = chrome_options)
+    driver = webdriver.Chrome(executable_path='../CloutScraper/chromedriver_win32/chromedriver.exe', options = chrome_options)
     
     artist_df = pd.read_csv(artist_repository, index_col = 0)
     
