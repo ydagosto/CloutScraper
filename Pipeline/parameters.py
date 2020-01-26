@@ -27,7 +27,7 @@ exec(catalogue_class)
 
 # set working directory where you'll be saving data and name of data file in store or to create
 # In this case this is going to be outside of pipeline folder and inside the slapscience master
-os.chdir("../../Data")
+os.chdir("../Data")
 
 catalogue_name = "sc_hot_and_top.csv"
 artist_repository = "artist_repository.csv"
